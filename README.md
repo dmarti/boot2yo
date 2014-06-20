@@ -1,9 +1,12 @@
+(This is a work in progress.  Not working yet.  Some missing symbols still need to get filled in.)
+
+
 Boot to Yo
 ==========
 
 OSv is the first operating system to support "boot to Yo" technology, to create a dedicated Yo-sending virtual machine in the cloud. This is a proof of concept.
 
-To try it, clone this git repository, and run with:
+Run with:
 
 ```
 capstan build && capstan run -n bridge
