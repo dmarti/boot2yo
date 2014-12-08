@@ -26,5 +26,5 @@ build: make
 #
 files:
   /boot2yo.so: boot2yo.so
-  /libcurl.so.4: /usr/lib64/libcurl.so.4
+  /libcurl.so.4: libcurl.so
 

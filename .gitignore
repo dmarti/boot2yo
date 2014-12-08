@@ -1,9 +1,14 @@
 # Object files
 *.o
+*.a
 
 # Shared objects
 *.so
 *.so.*
 
+# Temp files
+*.swp
+
 # Misc
-upstream/*.lzma
+upstream/*
+boot2yo

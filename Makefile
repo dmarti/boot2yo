@@ -2,12 +2,27 @@ CFLAGS = -std=gnu99 -fPIC -levent -lpthread
 LDFLAGS = -shared 
 
 CURL_VER = 7.24.0
-SSL_VER=1.0.1i
+SSL_VER=1.0.1j
 
-all : boot2yo.so
+CURL_DIR = upstream/curl-${CURL_VER}
 
-%.so : %.c
-	$(CC) -o $@ -std=gnu99 -fPIC -shared -lcurl $^
+HERE = $(shell pwd)
+
+all : boot2yo.so libcurl.so.4
+
+upstream : libcurl.so ${CURL_DIR}/include/curl/curl.h
+
+libcurl.so.4 : ${CURL_DIR}/lib/.libs/libcurl.so
+	cp $< $@
+
+boot2yo.o : boot2yo.c upstream
+	$(CC) -Wall -fPIC -c -I${CURL_DIR}/include -o $@ -std=gnu99 $< 
+
+boot2yo : boot2yo.o libcurl.so
+	$(CC) -L${HERE} -o $@ -std=gnu99 -lcurl $< 
+
+boot2yo.so : boot2yo.o libcurl.so
+	$(CC) -L. -o $@ -std=gnu99 -fPIC -shared -lcurl $<
 
 hooks : .git/hooks/pre-commit
 
@@ -16,13 +31,16 @@ hooks : .git/hooks/pre-commit
 	echo "make `basename $@`" >> $@
 	chmod 755 $@
 
+openssl-${SSL_VER}.a : upstream/openssl-${SSL_VER}/libssl.a
+	cp -v $< $@
+
 pre-commit :
 	git diff-index --check HEAD
 
-# Remove anything listed in the .gitignore file.
 clean :
-	find . -path ./.git -prune -o -print0 | \
-	git check-ignore -z --stdin | xargs -0 rm -f
+	rm -f ${all} boot2yo.o
+	rm -rf upstream/curl-${CURL_VER}
+	rm -rf upstream/openssl-${SSL_VER}
 
 upstream/openssl-${SSL_VER}.tar.gz:
 	mkdir -p upstream
@@ -45,7 +63,10 @@ upstream/curl-${CURL_VER}: upstream/curl-${CURL_VER}.tar.lzma
 upstream/curl-${CURL_VER}/lib/libssl.a: upstream/openssl-${SSL_VER}/libssl.a upstream/curl-${CURL_VER}
 	cd upstream && cp openssl-${SSL_VER}/libssl.a curl-${CURL_VER}/lib
 upstream/curl-${CURL_VER}/lib/.libs/libcurl.so.4.3.0: upstream/curl-${CURL_VER}  upstream/curl-${CURL_VER}/lib/libssl.a
-	cd upstream/curl-${CURL_VER} && ./configure --disable-ares --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-disc --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-ipv6 --disable-threaded-resolver --disable-sspi --disable-crypto-auth --disable-ntlm-wb --disable-tls-srp --without-libssh2 --without-librtmp --without-libidn --without-nghttp2
-	cd upstream/curl-${CURL_VER}/lib && cp Makefile Makefile.orig
 
-.PHONY : all clean hooks
+upstream/curl-${CURL_VER}/include/curl/curl.h : upstream/curl-${CURL_VER}/lib/.libs/libcurl.so
+
+upstream/curl-${CURL_VER}/lib/.libs/libcurl.so : upstream/curl-${CURL_VER}
+	cd upstream/curl-${CURL_VER} && ./configure --disable-ares --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-proxy --disable-disc --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-ipv6 --disable-threaded-resolver --disable-sspi --disable-crypto-auth --disable-ntlm-wb --disable-tls-srp --without-libssh2 --without-librtmp --without-libidn --without-nghttp2 --enable-static=no --enable-shared=yes && make 
+
+.PHONY : all clean hooks upstream
