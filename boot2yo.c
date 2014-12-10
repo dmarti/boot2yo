@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
-#define YO_API "http://www.justyo.co/yoall/"
-#define YO_KEY "xxxxxxxxxxxxxxxxxxxx"
+/* YO API key */
+#include "boot2yo.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,6 +1,3 @@
-(This is a work in progress.  Not working yet.  Some missing symbols still need to get filled in.)
-
-
 Boot to Yo
 ==========
 
