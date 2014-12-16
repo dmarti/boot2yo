@@ -14,6 +14,12 @@ to experience the fastest "boot to Yo" time and greatest Yo throughput of any op
 For more information on installing Capstan, see: https://github.com/cloudius-systems/capstan
 
 
+Contributing
+------------
+
+Pull requests accepted.  All of our deep architecture discussion and release planning will be conducted on the Yo platform.
+
+
 More OSv uses
 -------------
 

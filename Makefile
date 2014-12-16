@@ -8,20 +8,20 @@ CURL_DIR = upstream/curl-${CURL_VER}
 
 HERE = $(shell pwd)
 
-all : boot2yo.so libcurl.so.4
+all : boot2yo.so upstream
 
 upstream : libcurl.so ${CURL_DIR}/include/curl/curl.h
 
-libcurl.so.4 : ${CURL_DIR}/lib/.libs/libcurl.so
+libcurl.so : ${CURL_DIR}/lib/.libs/libcurl.so
 	cp $< $@
 
 boot2yo.o : boot2yo.c upstream
 	$(CC) -Wall -fPIC -c -I${CURL_DIR}/include -o $@ -std=gnu99 $< 
 
-boot2yo : boot2yo.o libcurl.so
+boot2yo : boot2yo.o
 	$(CC) -L${HERE} -o $@ -std=gnu99 -lcurl $< 
 
-boot2yo.so : boot2yo.o libcurl.so
+boot2yo.so : boot2yo.o
 	$(CC) -L. -o $@ -std=gnu99 -fPIC -shared -lcurl $<
 
 hooks : .git/hooks/pre-commit
@@ -38,7 +38,7 @@ pre-commit :
 	git diff-index --check HEAD
 
 clean :
-	rm -f ${all} boot2yo.o
+	rm -f  *.so *.o
 	rm -rf upstream/curl-${CURL_VER}
 	rm -rf upstream/openssl-${SSL_VER}
 

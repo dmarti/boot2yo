@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
  
     	res = curl_easy_perform(curl);
 	if(res == CURLE_OK) {
-		printf("SENT YO!\n");
+		printf("\nSENT YO!\n");
 	} else {
-		fprintf(stderr, "FAILED! DO YOU EVEN HAVE INTERNET?\n");
+		fprintf(stderr, "\nFAILED! DO YOU EVEN HAVE INTERNET?\n");
 	}
 	curl_easy_cleanup(curl);
 	curl_global_cleanup();
